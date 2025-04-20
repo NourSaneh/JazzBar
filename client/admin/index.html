@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Dashboard</title>
+    <link rel="stylesheet" href="../css/output.css">
+</head>
+<body>
+    <div class="flex justify-start gap-1">
+        <!-- Side Navbar -->
+        <div class="p-5 w-64 h-screen fixed bg-blue-400">
+            <h1 class="text-center text-4xl font-bold mb-24 text-white">Dashboard</h1>
+            <ul class="flex flex-col gap-10 ">
+                <li class="border-t border-b border-white py-2 px-1 text-white font-semibold hover:bg-blue-500 transition-all"><a href="https://localhost/jazz-bar/client/admin/">Dashboard</a></li>
+                <li class="border-t border-b border-white py-2 px-1 text-white font-semibold hover:bg-blue-500 transition-all"><a href="">Categories</a></li>
+                <li class="border-t border-b border-white py-2 px-1 text-white font-semibold hover:bg-blue-500 transition-all"><a href="">Food</a></li>
+                <li class="border-t border-b border-white py-2 px-1 text-white font-semibold hover:bg-blue-500 transition-all"><a href="">Drinks</a></li>
+                <li class="border-t border-b border-white py-2 px-1 text-white font-semibold hover:bg-blue-500 transition-all"><a href="">Tables</a></li>
+            </ul>
+        </div>
+        <!-- Main -->
+        <div class="py-6 px-10 ml-64 w-full min-h-screen bg-gray-100">
+            <h1 class="text-3xl font-bold">Revenu</h1>
+            <div id="revenu_container" class="grid grid-cols-4 mt-10">
+                <!--
+                <div class="w-1/2 h-28 bg-blue-100 bg-opacity-50 rounded-md p-2">
+                    <h1 class="mb-8 text-xl font-semibold">Type</h1>
+                    <h1 class="text-2xl font-bold">Total$</h1>
+                </div> 
+                -->              
+            </div>
+            <h1 class="text-3xl font-bold mt-16 mb-8">Transactions Table</h1>
+            <!--table transactions-->
+            <div id="table_transactions" class="overflow-x-auto rounded border border-gray-300 shadow-sm">
+ 
+            </div>
+              
+            <h1 class="text-3xl font-bold mt-16 mb-8">Transactions Items Table</h1>
+            <!--table transactions items-->
+            <div id="table_transaction_items" class="overflow-x-auto rounded border border-gray-300 shadow-sm">
+                
+            </div>
+              
+        </div>
+    </div>
+
+    <!-- Get The Transactions -->
+    <script>
+        let output = '';
+        let requestsDone = 0;
+    
+        function updateDOM() {
+            if (requestsDone === 4) {
+                document.getElementById("revenu_container").innerHTML = output;
+            }
+        }
+
+        function getTotalRev() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://localhost/jazz-bar/server/get_transactions.php?type=total", true);
+    
+            xhr.onload = function() {
+                const transactions = JSON.parse(this.responseText);
+    
+                output += 
+                '<div class="w-3/5 h-28 bg-red-400 rounded-md p-2 transition ease-in-out delay-150 hover:bg-red-500 duration-50">' +
+                '<h1 class="text-white mb-8 text-xl font-semibold">Total Revenue</h1>' +
+                '<h1 class="text-white text-2xl font-bold">' + transactions.total + '$</h1>' +
+                '</div>';
+    
+                requestsDone++;
+                updateDOM();
+            }
+    
+            xhr.send();
+        }
+    
+        function getBothRev() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://localhost/jazz-bar/server/get_transactions.php?type=both", true);
+    
+            xhr.onload = function() {
+                const transactions = JSON.parse(this.responseText);
+    
+                output += 
+                '<div class="w-3/5 h-28 bg-blue-400 rounded-md p-2 transition ease-in-out delay-150 hover:bg-blue-500 duration-50">' +
+                '<h1 class="text-white mb-8 text-xl font-semibold">DNF Revenue</h1>' +
+                '<h1 class="text-white text-2xl font-bold">' + transactions.total + '$</h1>' +
+                '</div>';
+    
+                requestsDone++;
+                updateDOM();
+            }
+    
+            xhr.send();
+        }
+    
+        function getFoodRev() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://localhost/jazz-bar/server/get_transactions.php?type=food", true);
+    
+            xhr.onload = function() {
+                const transactions = JSON.parse(this.responseText);
+    
+                output += 
+                '<div class="w-3/5 h-28 bg-green-400 rounded-md p-2 transition ease-in-out delay-150 hover:bg-green-500 duration-50">' +
+                '<h1 class="text-white mb-8 text-xl font-semibold">Food Revenue</h1>' +
+                '<h1 class="text-white text-2xl font-bold">' + transactions.total + '$</h1>' +
+                '</div>';
+    
+                requestsDone++;
+                updateDOM();
+            }
+    
+            xhr.send();
+        }
+    
+        function getDrinkRev() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://localhost/jazz-bar/server/get_transactions.php?type=drink", true);
+    
+            xhr.onload = function() {
+                const transactions = JSON.parse(this.responseText);
+    
+                output += 
+                '<div class="w-3/5 h-28 bg-yellow-400 rounded-md p-2 delay-150 hover:bg-yellow-500">' +
+                '<h1 class="text-white mb-8 text-xl font-semibold">Drink Revenue</h1>' +
+                '<h1 class="text-white text-2xl font-bold">' + transactions.total + '$</h1>' +
+                '</div>';
+    
+                requestsDone++;
+                updateDOM();
+            }
+    
+            xhr.send();
+        }
+
+        //get tables transactions
+        function getTableTransactions() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://localhost/jazz-bar/server/get_transactions.php?type=all", true);
+
+            xhr.onload = function () {
+                const table = JSON.parse(this.responseText);
+
+                var output = '';
+
+                output += 
+                '<table class="min-w-full divide-y-2 divide-gray-200">' +
+                    '<thead class="ltr:text-left rtl:text-right">' +
+                    '<tr class="*:font-medium *:text-gray-900">' +
+                        '<th class="px-3 py-2 whitespace-nowrap">ID</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Table</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Amount</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Payment Type</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Order Type</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Status</th>' +
+                    '</tr>' +
+                    '</thead>' +
+                    '<tbody class="divide-y divide-gray-200">';
+
+                for (i in table) {
+                output += 
+                    '<tr class="*:text-gray-900 *:first:font-medium">' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].id + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].table_id + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].total_amount + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].payment_method + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].type + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].status + '</td>' +
+                    '</tr>';
+                }
+
+                output += '</tbody></table>';
+
+                document.getElementById("table_transactions").innerHTML = output;
+
+            }
+
+            xhr.send();
+        }
+
+        //get tables transactions items
+        function getTableTransactionItems() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://localhost/jazz-bar/server/get_transaction_items.php", true);
+
+            xhr.onload = function () {
+                const table = JSON.parse(this.responseText);
+
+                var output = '';
+
+                output += 
+                '<table class="min-w-full divide-y-2 divide-gray-200">' +
+                    '<thead class="ltr:text-left rtl:text-right">' +
+                    '<tr class="*:font-medium *:text-gray-900">' +
+                        '<th class="px-3 py-2 whitespace-nowrap">ID</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Transaction</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Item</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Item ID</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Quantity</th>' +
+                        '<th class="px-3 py-2 whitespace-nowrap">Price</th>' +
+                    '</tr>' +
+                    '</thead>' +
+                    '<tbody class="divide-y divide-gray-200">';
+
+                for (i in table) {
+                output += 
+                    '<tr class="*:text-gray-900 *:first:font-medium">' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].id + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].transaction_id + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].item_type + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].item_id + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].quantity + '</td>' +
+                    '<td class="px-3 py-2 whitespace-nowrap">' + table[i].price + '</td>' +
+                    '</tr>';
+                }
+
+                output += '</tbody></table>';
+
+                document.getElementById("table_transaction_items").innerHTML = output;
+
+            }
+
+            xhr.send();
+        }
+    
+        getTotalRev();
+        getBothRev();
+        getFoodRev();
+        getDrinkRev();
+        getTableTransactions();
+        getTableTransactionItems();
+    </script>
+    
+</body>
+</html>
